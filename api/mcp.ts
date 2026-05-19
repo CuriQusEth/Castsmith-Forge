@@ -1,18 +1,15 @@
-import express from "express";
-import path from "path";
-import { createServer as createViteServer } from "vite";
-import cors from "cors";
+export default async function handler(req, res) {
+  // CORS configuration
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-async function startServer() {
-  const app = express();
-  const PORT = 3000;
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end();
+  }
 
-  app.use(cors());
-  app.use(express.json());
-
-  // MCP GET
-  app.get("/api/mcp", (req, res) => {
-    res.json({
+  if (req.method === 'GET') {
+    return res.status(200).json({
       protocol: "MCP",
       version: "1.0.0",
       name: "CastSmith Forge MCP Endpoint",
@@ -28,10 +25,9 @@ async function startServer() {
       ],
       timestamp: new Date().toISOString()
     });
-  });
+  }
 
-  // MCP POST
-  app.post("/api/mcp", (req, res) => {
+  if (req.method === 'POST') {
     try {
       const body = req.body || {};
       const method = body.method || "unknown";
@@ -65,49 +61,19 @@ async function startServer() {
         };
       }
 
-      res.json({
+      return res.status(200).json({
         jsonrpc: "2.0",
         id: body.id,
         result: result
       });
     } catch (error) {
-      res.status(400).json({ 
+      return res.status(400).json({ 
         jsonrpc: "2.0",
         id: null,
         error: { code: -32700, message: "Parse error" } 
       });
     }
-  });
-
-  // Agent API GET
-  app.get("/api/agent", (req, res) => {
-    res.json({
-      name: "CastSmith Forge Orchestrator",
-      status: "active",
-      wallet: "0x29536D0bc1004ab274c4F0F59734Ad74D4559b7B",
-      platform: "CastSmith Forge",
-      version: "1.0.0"
-    });
-  });
-
-  // Vite middleware for development
-  if (process.env.NODE_ENV !== "production") {
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: "spa",
-    });
-    app.use(vite.middlewares);
-  } else {
-    const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath));
-    app.get('*', (req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
-    });
   }
 
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-  });
+  return res.status(405).json({ error: "Method not allowed" });
 }
-
-startServer();

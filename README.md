@@ -20,7 +20,7 @@ This application hosts the **CastSmith Forge Orchestrator**, an active AI agent 
 ### Agent Registration (ERC-8004)
 The agent communicates via standard A2A (Agent-to-Agent) and MCP endpoints.
 - **Agent Card:** `https://castsmith-forge.vercel.app/.well-known/agent-card.json`
-- **MCP Endpoint:** `https://castsmith-forge.vercel.app/api/mcp` *(Use this endpoint for testing or client connections, NOT `/app/api/mcp`)*
+- **MCP Endpoint:** `https://castsmith-forge.vercel.app/api/mcp` *(Use this endpoint for testing or client connections)*
 - **Agent API:** `https://castsmith-forge.vercel.app/api/agent`
 - **Supported Chains:** Base Mainnet (`eip155:8453`)
 
